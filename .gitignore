@@ -1,3 +1,6 @@
+#Tarballs
+*.tgz
+
 # Prerequisites
 *.d
 
