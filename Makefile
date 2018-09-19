@@ -11,7 +11,7 @@ TARBALL = ${USER}-${PROJ}.tgz
 
 
 ${EXEC}: ${OBJS}
-	${CC} ${CCFLAGS} -o ${EXEC} ${OBJS}
+	${CC} ${CCFLAGS} -o ${EXEC} ${OBJS} -lm
 
 .c.o:
 	${CC} ${CCFLAGS} -c $<

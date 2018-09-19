@@ -7,9 +7,11 @@ dk.h contains the prototypes for the functions dk.c
 #ifndef DK_H
 #define DK_H
 
-double horner(double complex x, double * a, int degree);
-int durandKerner(double * coef, double * z, int n);
-void printIterations(double * coef, int n);
+#define PI 3.14159265359
+
+double complex horner(double complex x, double complex * a, int degree);
+double complex * durandKerner(double complex * coef, double complex * z, int n);
+void printIterations(double complex * coef, int n);
 
 
 #endif
