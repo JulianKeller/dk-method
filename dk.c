@@ -25,9 +25,9 @@ k = the iteration we are on
 
 
 // This algorithm is taken from the slides
-double horner(double x, double a[], int degree){
+double horner(double complex x, double * a, int degree){
 	// a contains degree+1 values
-	double p = a[degree];
+	double complex p = a[degree];
 	for(int i = degree - 1; i >= 0; i--){
 		p = a[i] + x * p;
 	}
@@ -35,54 +35,54 @@ double horner(double x, double a[], int degree){
 }
 
 
-// TODO fix all compile errors, as I'm sure there are many
-// TODO add these to .h file
-// Takes coefficient array, n number of coefficients
-int durandKerner(double * coef, int n){
+// // TODO fix all compile errors, as I'm sure there are many
+// // TODO add these to .h file
+// // Takes coefficient array, n number of coefficients
+// int durandKerner(double * coef, int n){
 
-	// double eps = 10^-6 // or is it 10e-6 // make sure this is correct way to do the exponent
-	double *z = calloc(20, sizeof(double));
-	double *deltaz = calloc(20, sizeof(double));
+// 	// double eps = 10^-6 // or is it 10e-6 // make sure this is correct way to do the exponent
+// 	double *z = calloc(20, sizeof(double));
+// 	double *deltaz = calloc(20, sizeof(double));
 
 	
-	double cmax = coef[0];
-	// get max abs value in z
-	for (int i = 1; i < n; i++){
-		if (abs(coef[i]) >= cmax){		// TODO is the actually absolute value?
-			cmax = abs(coef[i]);
-		}	
-	}
+// 	double cmax = coef[0];
+// 	// get max abs value in z
+// 	for (int i = 1; i < n; i++){
+// 		if (abs(coef[i]) >= cmax){		// TODO is the actually absolute value?
+// 			cmax = abs(coef[i]);
+// 		}	
+// 	}
 
-	// get initial z guess values
-	double R = 1 + cmax
-	for (int j = 0; j < n; j++){
-		// TODO is this the correct j???
-		double theta = (j(2*pi)/n);
-		z[i] = R*cos(theta) + R*I*sin(theta); 		// this is imaginary number I = sqrt(-1)
-	}
+// 	// get initial z guess values
+// 	double R = 1 + cmax
+// 	for (int j = 0; j < n; j++){
+// 		// TODO is this the correct j???
+// 		double theta = (j(2*pi)/n);
+// 		z[i] = R*cos(theta) + R*I*sin(theta); 		// this is imaginary number I = sqrt(-1)
+// 	}
 
-	// K is max number of iterations
-	for (int k = 0; k < 50; k++){
-		int zmax = 0;
-		for (int j = 0; j < n; j++){
-			// compute Qj
-			// begin with Q = 1
-			// Q = Q * (z[j] - zi), don't know what 'i' is yet
+// 	// K is max number of iterations
+// 	for (int k = 0; k < 50; k++){
+// 		int zmax = 0;
+// 		for (int j = 0; j < n; j++){
+// 			// compute Qj
+// 			// begin with Q = 1
+// 			// Q = Q * (z[j] - zi), don't know what 'i' is yet
 
-			// detlaz = -f(z[j])/Qj  <--- use horners method for -f(z[j])
+// 			// detlaz = -f(z[j])/Qj  <--- use horners method for -f(z[j])
 
-			// if (abs(deltaz) > zmax){ zmax = abs(deltaz) }
+// 			// if (abs(deltaz) > zmax){ zmax = abs(deltaz) }
 
-		}
-		for (int j = 0; j < n; j++){
-			// z[j] = z[j] + deltaz[j]
-	}
+// 		}
+// 		for (int j = 0; j < n; j++){
+// 			// z[j] = z[j] + deltaz[j]
+// 	}
 
-	// if(deltaz <= eps){
-		// return
-	// }
-	return 0;
-}
+// 	// if(deltaz <= eps){
+// 		// return
+// 	// }
+// 	return 0;
+// }
 
 
 // Method for printing each iteration
@@ -90,7 +90,7 @@ void printIterations(double * coef, int n){
 
 	// For now it just prints the list
 	for (int i = 0; i < n; i++){
-		printf("%lf, ", coef[i]);
+		printf("Got:(%.1f + %.1f I)\n", creal(coef[i]), cimag(coef[i]));
 	}
 	printf("\n");
 }
@@ -99,30 +99,27 @@ void printIterations(double * coef, int n){
 // TODO will need to use Horners Rule at some point
 int main(){
 
-	// TODO Readin numbers from stdin using scanf as ASCII floating point
-	// TODO fix single letter variable names
-
-	// DO i need to use double?
 	int n = 0;
-	double i ='0'; 		// integer and decimal
-	double d ='0'; 
-	double *coef = calloc(20, sizeof(double));		// initialize array of size 20 for coefficient doubles
+	double real ='0'; 
+	double imag ='0'; 
 
-	// Read input from the user
-	while(scanf("%lf %lf", &i, &d) == 2){
+	double *coef = calloc(20, sizeof(double complex));		// initialize array of size 20 for coefficient of complex doubles
 
-		// TODO probably don't want to add these, how exactly do I figure these out?
-		/*
-		is input 5 0 == 5.0 and is 1 1 == 1.1?
-		*/ 
-		coef[n] = (i + d);
+	// Read input from the user, and add complex numbers to the coefficient list
+	while(scanf("%lf %lf", &real, &imag) == 2){
+		coef[n] = (real + imag * I);
 		n++;
 	}
 
+	// array is normalized, add 1 to the end of it
+	coef[n] = 1 + 0 * I;
+
 	printIterations(coef, n);
+	// double horner(double complex x, double * a, int degree)
+	double complex a = horner(3 + 0 * I, coef, n);
 
-
-
+	printf("Horner :(%.1f + %.1f I)\n", creal(a), cimag(a));
+	free(coef);		// free the memory for the coefficient array
 	return 0;
 }
 
