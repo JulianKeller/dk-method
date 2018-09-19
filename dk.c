@@ -121,7 +121,8 @@ int main(){
 	printf("Horner :(%.1f + %.1f I)\n", creal(a), cimag(a));
 	free(coef);		// free the memory for the coefficient array
 	return 0;
-}
 
+	
+}
 
 
