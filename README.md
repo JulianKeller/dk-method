@@ -1,4 +1,4 @@
-# dk-method
+# Durand Kerner Method
 This project in an implementation of the Durand-Kerner root finding method. Passing in the coefficients of a normalized polynomial the program will print out the roots of the polynomial as well as each iterative result on the way.It is written as part of Numerical Computing (CS 330) at Washington State University Vancouver. 
 
 ## Getting Started
