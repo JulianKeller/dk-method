@@ -1,3 +1,7 @@
+# .in and .out files
+*.in
+*.out
+
 #Tarballs
 *.tgz
 
