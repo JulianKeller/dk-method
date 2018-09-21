@@ -54,8 +54,6 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 		z[j] = (R * cos(theta)) + (R * sin(theta) * I); 		// this is imaginary number I = sqrt(-1)
 	}
 
-	
-
 	// K is max number of iterations
 	for (int k = 1; k <= 50; k++){
 		double zmax = 0;
@@ -76,25 +74,22 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 				}	
 			}
 
-			// Compute the Numerator
-			complex double horn = horner(z[j], coef, n);
+			// Compute the next iteration, deltaz[j] = z[j] - (f(z[j])/Qj)
+			deltaz[j] = z[j] -(horner(z[j], coef, n)/Q);		
 
-			// deltaz[j] = f(z[j])/Qj
-			deltaz[j] = z[j] - (horn/Q);		
-
-
+			// get the largest difference between z[j] and next iteration of z[j]
 			if (cabs(z[j] - deltaz[j]) > zmax){
 				zmax = cabs(z[j] - deltaz[j]);
 			}
-			
 		}
 
-
 		printIterations(z, n);
+		// update the values for the next iteration
 		for (int j = 0; j < n; j++){
 			z[j] = deltaz[j];
 		}
 
+		// if the maximum difference is less than epsilon return
 		if(eps >= zmax){
 			return z; 			
 		}
@@ -105,16 +100,15 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 }
 
 
-// Method for printing each iteration
+// Method for printing each iteration of z values
 void printIterations(double complex * z, int n){
 	for (int i = 0; i < n; i++){
 		printf("z[%i] = %.10f + %.10f i\n", i, creal(z[i]), cimag(z[i]));	// prints 10 digits after decimal point
 	}
 }
 
-// TODO refactor code
 // TODO check for memory leaks
-
+// TODO finish README
 int main(){
 
 	int n = 0;
@@ -140,10 +134,3 @@ int main(){
 
 	return 0;
 }
-
-
-// ./dk < 
-// FIXME
-// These files are stopping too early, however have the identical output for each step up until they stop
-// mult.in is different
-// p18 stops like 18 too short
