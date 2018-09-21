@@ -32,6 +32,8 @@ The function f(x) = z^3 - 3z^2 + 3z - 5 would be entered as a set of complex flo
 ```
 Note that the polynomial is normalized and the first coefficient of z^3 (which is 1) does not need to be passed in.
 
+Once the user is finished entering input pressing ctrl+D to run.
+
 ## Details
 
 The program will run until the root is computed with 6 digits of precision or 50 iterations, whichever comes first.
