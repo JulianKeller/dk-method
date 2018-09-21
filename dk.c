@@ -74,16 +74,13 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 		double zmax = 0;
 		printf("iter %i\n", k);
 		for (int j = 0; j < n; j++){
-				
 
-			// TODO computer Qj only once?	
-
-			
-			double complex Q = 1;				// TODO might need to initialize this
+			// Compute Denominator
+			double complex Q = 1;				
 			for (int i = 0; i < n; i++){
-				if (z[j] == z[i]){		// if their difference is less than or equal to epsilon they are basically equal
+				if (z[j] == z[i]){
 					// printf("Skipped z[j] == z[i]\n");
-					// printf("zj[%i]: %.10f + %.10fi, zi[%i]: %.10f + %.10fi\n",j, creal(z[j]), cimag(z[j]), i, creal(z[i]), cimag(z[i]));
+					// printf("Skip! zj[%i]: %.10f + %.10fi, zi[%i]: %.10f + %.10fi\n",j, creal(z[j]), cimag(z[j]), i, creal(z[i]), cimag(z[i]));
 					continue;
 				}
 				if (Q == 0){
@@ -94,40 +91,44 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 				}	
 			}
 
-			// printf("Q after: %.10f + %.10f i\n", creal(Q), cimag(Q));
+			// printf("Q_%i: %.10f + %.10f i\n", j, creal(Q), cimag(Q));
 			
 			// printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
 
-			// double complex horn = horner(z[j], coef, n);
-
-
 			// deltaz = f(z[j])/Qj
-			deltaz = (-(horner(z[j], coef, n)))/Q;		// TODO double check this gives correct result
+			deltaz = (-(horner(z[j], coef, n)))/Q;		
 
 // Correct up to here ----------------------------------------------------------------------------------
 
 			
-			// printf("deltaz: %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
+			// printf("deltaz_%i: %.10f + %.10f i\n", j, creal(deltaz), cimag(deltaz));
 
 			if (cabs(deltaz) > zmax){
 				zmax = cabs(deltaz);
 			}
-			// printf("zmax: %.10f + %.10f i\n", creal(zmax), cimag(zmax));
+			// printf("zmax_%i: %.10f + %.10f i\n", j, creal(zmax), cimag(zmax));
 
+
+
+			// for (int j = 0; j < n; j++){
+			// 	printf("deltaz: %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
+			// 	z[j] = z[j] + deltaz;
+			// 	// printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
+			// }
 
 		}
 
-// TODO I think that I am supposed to find Q for each z[j] individually. 
-		// Then add that value. Probably why I am getting wrong stuff
 
 		printIterations(z, n);
 		for (int j = 0; j < n; j++){
-				// printf("deltaz: %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
+			// printf("z[j] + deltaz = %.10f + %.10f i + ", creal(z[j]), cimag(z[j]));
+			// printf(" %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
 			z[j] = z[j] + deltaz;
-				printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
+			// printf("= z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
 		}
 		
-
+		// FIXME zmax is increasing, not decreasing! 
+		// printf("zmax: %.10f + %.10f i\n", creal(zmax), cimag(zmax));
 		if(zmax <= eps){
 			return z; 			
 		}
