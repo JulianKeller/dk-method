@@ -1,5 +1,5 @@
 # Durand Kerner Method
-This project in an implementation of the Durand-Kerner root finding method. Passing in the coefficients of a normalized polynomial the program will print out the roots of the polynomial as well as each iterative result on the way.It is written as part of Numerical Computing (CS 330) at Washington State University Vancouver. 
+This project is an implementation of the Durand-Kerner root finding method. The program will print out the roots of a normalized polynomial as well as each iterative result used to arrive at the roots. It is written as part of Numerical Computing (CS 330) at Washington State University Vancouver. 
 
 ## Getting Started
 
@@ -30,7 +30,7 @@ The function f(x) = z^3 - 3z^2 + 3z - 5 would be entered as a set of complex flo
 3 0
 -3 0
 ```
-Please note that the polynomial is normalized and the first coefficient of z^3 (which is 1) does not need to be passed in.
+Note that the polynomial is normalized and the first coefficient of z^3 (which is 1) does not need to be passed in.
 
 ## Details
 
