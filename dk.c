@@ -1,8 +1,8 @@
 /*
-Julian Keller
-julian.keller@wsu.edu
 Durand-Kerner Method
-
+Written by: Julian Keller
+Contact: julian.keller@wsu.edu
+Last Updated: Sept 21, 2018
 
 This program is used to find the roots of a polynomial using the Durand-Kerner Method. The program accepts
 complex numbers as floating point pairs. The input -5 0 represents -5.0 + 0i. This input will be the coefficient
@@ -36,11 +36,11 @@ double complex horner(double complex x, double complex * a, int degree){
 // Finds the roots of the function using the Durand-Kerner Method
 double complex * durandKerner(double complex * coef, double complex * z, int n){
 
-	double complex *deltaz = calloc(20, sizeof(double complex));
+	double complex *deltaz = (double complex *) calloc(20, sizeof(double complex));
 	double eps = 10e-7; 		// 10^-6 precision
 	double complex cmax = coef[0];
 
-	// get max absolute value using cabs()
+	// Get max absolute value coefficient
 	for (int i = 1; i < n; i++){		
 		if (cabs(coef[i]) >= cabs(cmax)){	
 			cmax = cabs(coef[i]);
@@ -75,26 +75,29 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 			}
 
 			// Compute the next iteration, deltaz[j] = z[j] - (f(z[j])/Qj)
-			deltaz[j] = z[j] -(horner(z[j], coef, n)/Q);		
+			deltaz[j] = z[j] -(horner(z[j], coef, n)/Q);	
 
-			// get the largest difference between z[j] and next iteration of z[j]
+			// Get the largest difference between z[j] and next iteration of z[j]
 			if (cabs(z[j] - deltaz[j]) > zmax){
 				zmax = cabs(z[j] - deltaz[j]);
 			}
 		}
 
+		// Print each iteration
 		printIterations(z, n);
-		// update the values for the next iteration
+
+		// Update the values for the next iteration
 		for (int j = 0; j < n; j++){
 			z[j] = deltaz[j];
 		}
 
-		// if the maximum difference is less than epsilon return
+		// If the maximum difference is less than epsilon return
 		if(eps >= zmax){
+			free(deltaz);
 			return z; 			
 		}
-		
 	}
+	// Free array memory
 	free(deltaz);
 	return z;
 }
@@ -107,8 +110,7 @@ void printIterations(double complex * z, int n){
 	}
 }
 
-// TODO check for memory leaks
-// TODO finish README
+
 int main(){
 
 	int n = 0;
@@ -122,11 +124,19 @@ int main(){
 		coef[n] = (real + imag * I);
 		n++;
 	}
-
-	// array is normalized, so 1 needs to be added the end of it
+	// Array is normalized, so 1 needs to be added the end of it
 	coef[n] = 1;
 
 	durandKerner(coef, z, n);
+
+	/* Below is a test to check the results of durandKerner by passing the results into horner
+	   and checking that they result in 0 or very close to 0. */
+	// printf("\n");
+	// for (int i = 0; i < n; i++){
+	// 	double h = horner(z[i], coef, n);
+	// 	printf("h = %.10f\n", h);
+	// }
+
 	
 	// free the memory for the arrays
 	free(coef);		
