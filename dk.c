@@ -28,16 +28,17 @@ k = the iteration we are on
 // This algorithm is taken from the slides and modified for array pointers 
 double complex horner(double complex x, double complex * a, int degree){
 	// a contains degree+1 values
-	double complex p;
+	double complex p = a[degree];
 	for(int i = degree - 1; i >= 0; i--){
-		p = a[i] + x * p;
+		// printf("a[%i]: %.10f + %.10f i\n", i, creal(a[i]), cimag(a[i]));
+		p = a[i] + (x * p);
+		// printf("p: %.10f + %.10f i\n", creal(p), cimag(p));
 	}
 	return p;
-	// TODO will need to free p at some point
 }
 
 
-// TODO fix all compile errors, as I'm sure there are many
+
 // TODO change deltaz name
 // Takes coefficient array, n number of coefficients
 double complex * durandKerner(double complex * coef, double complex * z, int n){
@@ -47,11 +48,13 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 	double complex cmax = coef[0];
 
 	// get max abs value using cabs()
-	for (int i = 1; i < n; i++){
-		if (cabs(coef[i] - cmax) >= eps){		
+	for (int i = 1; i < n; i++){		
+		if (cabs(coef[i]) >= cabs(cmax)){	
 			cmax = cabs(coef[i]);
 		}	
 	}
+
+	
 
 	// get initial z guess values
 	double complex R = 1 + cabs(cmax);
@@ -59,38 +62,76 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 		// TODO is this the correct j???
 		double complex theta = (j * (2 * PI)/n);
 		z[j] = (R * cos(theta)) + (R * sin(theta) * I); 		// this is imaginary number I = sqrt(-1)
+		// printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
 	}
 
+	// printIterations(z, n);
+
+	
+
 	// K is max number of iterations
-	for (int k = 0; k < 50; k++){
+	for (int k = 1; k <= 50; k++){
 		double zmax = 0;
+		printf("iter %i\n", k);
 		for (int j = 0; j < n; j++){
-			double complex Q;				// TODO might need to initialize this
-			for (int i = 0; i < n; i++){ 	// compute Qj
-				if (cabs(z[i] - z[j]) <= eps){		// if their difference is less than or equal to epsilon they are basically equal
+				
+
+			// TODO computer Qj only once?	
+
+			
+			double complex Q = 1;				// TODO might need to initialize this
+			for (int i = 0; i < n; i++){
+				if (z[j] == z[i]){		// if their difference is less than or equal to epsilon they are basically equal
+					// printf("Skipped z[j] == z[i]\n");
+					// printf("zj[%i]: %.10f + %.10fi, zi[%i]: %.10f + %.10fi\n",j, creal(z[j]), cimag(z[j]), i, creal(z[i]), cimag(z[i]));
 					continue;
 				}
-				Q = Q * (z[j] - z[i]);
+				if (Q == 0){
+					Q = (z[j] - z[i]);
+				}
+				else{
+					Q = Q * (z[j] - z[i]);
+				}	
 			}
+
+			// printf("Q after: %.10f + %.10f i\n", creal(Q), cimag(Q));
 			
-			// f(z[j])/Qj
-			deltaz = horner(z[j], coef, n)/Q;		// TODO double check this gives correct result
+			// printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
+
+			// double complex horn = horner(z[j], coef, n);
+
+
+			// deltaz = f(z[j])/Qj
+			deltaz = (-(horner(z[j], coef, n)))/Q;		// TODO double check this gives correct result
+
+// Correct up to here ----------------------------------------------------------------------------------
+
 			
+			// printf("deltaz: %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
 
 			if (cabs(deltaz) > zmax){
 				zmax = cabs(deltaz);
 			}
+			// printf("zmax: %.10f + %.10f i\n", creal(zmax), cimag(zmax));
 
 
-			for (int j = 0; j < n; j++){
-				z[j] = z[j] + deltaz;
-			}
-
-			if(zmax <= eps){
-				return z; 			// TODO this might need to be a pointer
-			}
-			printIterations(z, n);
 		}
+
+// TODO I think that I am supposed to find Q for each z[j] individually. 
+		// Then add that value. Probably why I am getting wrong stuff
+
+		printIterations(z, n);
+		for (int j = 0; j < n; j++){
+				// printf("deltaz: %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
+			z[j] = z[j] + deltaz;
+				printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
+		}
+		
+
+		if(zmax <= eps){
+			return z; 			
+		}
+		
 	}
 	return z;
 }
@@ -101,13 +142,14 @@ void printIterations(double complex * z, int n){
 
 	// For now it just prints the list
 	for (int i = 0; i < n; i++){
-		printf("z[%i] = %.1f + %.1f i)\n", i, creal(z[i]), cimag(z[i]));
+		printf("z[%i] = %.10f + %.10f i\n", i, creal(z[i]), cimag(z[i]));		// prints 10 digits after decimal point
 	}
 	printf("\n");
 }
 
 
-// TODO will need to use Horners Rule at some point
+
+
 int main(){
 
 	int n = 0;
@@ -125,17 +167,21 @@ int main(){
 	}
 
 	// array is normalized, add 1 to the end of it
-	coef[n] = 1 + 0 * I;
+	coef[n] = 1;
 
 	durandKerner(coef, z, n);
 
-	
 	// printIterations(coef, n);
 	// double horner(double complex x, double * a, int degree)
 	// double complex a = horner(3 + 0 * I, coef, n);
 
 	// printf("Horner :(%.1f + %.1f I)\n", creal(a), cimag(a));
-	// printf("eps: %lf", 10e-6);
+	// double complex a = 1;
+	// double complex b = 5 + 0 * I;
+	// a = a*b;
+	
+	// 	printf("nums: %.10f + %.10f i\n", creal(a), cimag(a));
+	
 
 	free(coef);		// free the memory for the coefficient array
 	free(z);
