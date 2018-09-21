@@ -39,12 +39,13 @@ double complex horner(double complex x, double complex * a, int degree){
 
 
 
-// TODO change deltaz name
+// TODO change deltaz[j] name
 // Takes coefficient array, n number of coefficients
 double complex * durandKerner(double complex * coef, double complex * z, int n){
 
+	double complex *deltaz = calloc(20, sizeof(double complex));
 	double eps = 10e-6; 		// 10^-6 precision
-	double complex deltaz = 0;
+	// double complex deltaz[j] = 0;
 	double complex cmax = coef[0];
 
 	// get max abs value using cabs()
@@ -74,7 +75,8 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 		double zmax = 0;
 		printf("iter %i\n", k);
 		for (int j = 0; j < n; j++){
-
+			zmax = 0;
+			double complex diff = 0;
 			// Compute Denominator
 			double complex Q = 1;				
 			for (int i = 0; i < n; i++){
@@ -95,24 +97,28 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 			
 			// printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
 
-			// deltaz = f(z[j])/Qj
-			deltaz = (-(horner(z[j], coef, n)))/Q;		
+			complex double horn = horner(z[j], coef, n);
+
+			// deltaz[j] = f(z[j])/Qj
+			deltaz[j] = z[j] - (horn/Q);		
 
 // Correct up to here ----------------------------------------------------------------------------------
 
 			
-			// printf("deltaz_%i: %.10f + %.10f i\n", j, creal(deltaz), cimag(deltaz));
+			// printf("deltaz[j]_%i: %.10f + %.10f i\n", j, creal(deltaz[j]), cimag(deltaz[j]));
 
-			if (cabs(deltaz) > zmax){
-				zmax = cabs(deltaz);
+			diff = z[j] - deltaz[j];
+
+			if (cabs(diff) > zmax){
+				zmax = cabs(diff);
 			}
 			// printf("zmax_%i: %.10f + %.10f i\n", j, creal(zmax), cimag(zmax));
 
 
 
 			// for (int j = 0; j < n; j++){
-			// 	printf("deltaz: %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
-			// 	z[j] = z[j] + deltaz;
+			// 	printf("deltaz[j]: %.10f + %.10f i\n", creal(deltaz[j]), cimag(deltaz[j]));
+			// 	z[j] = z[j] + deltaz[j];
 			// 	// printf("z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
 			// }
 
@@ -121,11 +127,12 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 
 		printIterations(z, n);
 		for (int j = 0; j < n; j++){
-			// printf("z[j] + deltaz = %.10f + %.10f i + ", creal(z[j]), cimag(z[j]));
-			// printf(" %.10f + %.10f i\n", creal(deltaz), cimag(deltaz));
-			z[j] = z[j] + deltaz;
+			// printf("z[j] + deltaz[j] = %.10f + %.10f i + ", creal(z[j]), cimag(z[j]));
+			// printf(" %.10f + %.10f i\n", creal(deltaz[j]), cimag(deltaz[j]));
+			z[j] = deltaz[j];
 			// printf("= z[j]: %.10f + %.10f i\n", creal(z[j]), cimag(z[j]));
 		}
+
 		
 		// FIXME zmax is increasing, not decreasing! 
 		// printf("zmax: %.10f + %.10f i\n", creal(zmax), cimag(zmax));
@@ -134,6 +141,7 @@ double complex * durandKerner(double complex * coef, double complex * z, int n){
 		}
 		
 	}
+	free(deltaz);
 	return z;
 }
 
@@ -145,7 +153,7 @@ void printIterations(double complex * z, int n){
 	for (int i = 0; i < n; i++){
 		printf("z[%i] = %.10f + %.10f i\n", i, creal(z[i]), cimag(z[i]));		// prints 10 digits after decimal point
 	}
-	printf("\n");
+	// printf("\n");
 }
 
 
